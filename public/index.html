@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pokémon Database</title>
+
+  <!-- Main Styles -->
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+
+<body>
+  <main class="container">
+    <h1>Pokémon Database</h1>
+    <p class="muted">
+      Type a Pokémon name (e.g., <code>charizard</code>, <code>mew</code>) and fetch data from your local API.
+    </p>
+
+    <!-- Search -->
+    <div class="search">
+      <label for="nameInput">Pokémon name:</label>
+      <input id="nameInput" placeholder="charizard" autocomplete="off" />
+      <button id="fetchBtn">Fetch</button>
+    </div>
+
+    <!-- Status / errors -->
+    <p id="status" class="status"></p>
+
+    <!-- Pokémon Card -->
+    <section id="card" class="card hidden">
+      <img id="sprite" alt="Pokémon sprite" />
+      <div class="details">
+        <h2 id="name"></h2>
+        <p><strong>Height:</strong> <span id="height"></span></p>
+        <p><strong>Weight:</strong> <span id="weight"></span></p>
+        <p><strong>Types:</strong> <span id="types"></span></p>
+        <p><strong>Abilities:</strong> <span id="abilities"></span></p>
+      </div>
+    </section>
+
+    <p class="nav"><a href="/">Home</a></p>
+  </main>
+
+  <!-- Helper + Logic -->
+  <script src="/js/app.js"></script>
+  <script>
+    // DOM elements
+    const input  = document.getElementById("nameInput");
+    const button = document.getElementById("fetchBtn");
+    const status = document.getElementById("status");
+    const card   = document.getElementById("card");
+
+    const sprite = document.getElementById("sprite");
+    const nameEl = document.getElementById("name");
+    const heightEl = document.getElementById("height");
+    const weightEl = document.getElementById("weight");
+    const typesEl = document.getElementById("types");
+    const abilitiesEl = document.getElementById("abilities");
+
+    function setStatus(msg, isError = false) {
+      status.textContent = msg;
+      status.style.color = isError ? "crimson" : "inherit";
+    }
+
+    async function fetchPokemon(name) {
+      setStatus("Loading…");
+      card.classList.add("hidden");
+
+      try {
+        const data = await fetchJSON(`/api/external/pokemon/${encodeURIComponent(name)}`);
+        setStatus("");
+
+        sprite.src = data.sprite || "";
+        sprite.alt = data.name || "";
+        nameEl.textContent = data.name?.toUpperCase() || "(unknown)";
+        heightEl.textContent = data.height || "—";
+        weightEl.textContent = data.weight || "—";
+        typesEl.textContent = data.types.join(", ") || "—";
+        abilitiesEl.textContent = data.abilities.join(", ") || "—";
+
+        card.classList.remove("hidden");
+      } catch (err) {
+        setStatus(`Error: ${err.message}`, true);
+      }
+    }
+
+    button.addEventListener("click", () => {
+      const name = input.value.trim().toLowerCase();
+      if (!name) return setStatus("Please enter a Pokémon name.", true);
+      fetchPokemon(name);
+    });
+
+    input.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") button.click();
+    });
+  </script>
+</body>
+</html>
