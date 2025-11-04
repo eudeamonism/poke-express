@@ -4,6 +4,7 @@
 A simple Node.js + Express application that fetches Pokémon data from the [PokeAPI](https://pokeapi.co/) and serves both an API and a minimal frontend UI.  
 
 ## **🌐 Live Demo:** [https://poke-mini.onrender.com/](https://poke-mini.onrender.com/)
+⏳ **Please note:** Because this project is deployed on Render’s free tier, it may take a few minutes to spin up the first time you access it.
 
 ## 📘 Project Overview  
 
